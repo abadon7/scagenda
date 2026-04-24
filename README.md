@@ -1,65 +1,65 @@
 # SCagenda
 
-Aplicacion web ligera, pensada para celular, para organizar la visita del superintendente viajante.
+Lightweight web application, designed for mobile, to organize the circuit overseer's visit.
 
-## Desarrollo
+## Development
 
-1. Copie `.env.example` a `.env` y complete las variables `VITE_FIREBASE_*`.
-2. Instale dependencias del cliente con `npm install`.
-3. Instale dependencias de Functions con `cd functions && npm install`.
-4. Inicie el cliente con `npm run dev`.
+1. Copy `.env.example` to `.env` and fill in the `VITE_FIREBASE_*` variables.
+2. Install client dependencies with `npm install`.
+3. Install Functions dependencies with `cd functions && npm install`.
+4. Start the client with `npm run dev`.
 
-## Produccion
+## Production
 
-- Cree la version final del cliente con `npm run build`.
-- Despliegue la funcion `loginWithCongregationCode` desde `functions/`.
-- Publique `firestore.rules` en Firebase.
+- Create the final version of the client with `npm run build`.
+- Deploy the `loginWithCongregationCode` function from `functions/`.
+- Publish `firestore.rules` to Firebase.
 
-## Modelo de acceso
+## Access Model
 
-- La app usa `congregation name + congregationNumber`.
-- El cliente no valida el numero directamente.
-- Una Cloud Function valida el nombre y numero y devuelve un Firebase custom token.
-- Firestore solo permite acceso cuando el token tiene:
+- The app uses `congregation name + congregationNumber`.
+- The client does not validate the number directly.
+- A Cloud Function validates the name and number and returns a Firebase custom token.
+- Firestore only allows access when the token has:
   - `role: "congregation"`
   - `congregation_id`
 
-## Colecciones usadas
+## Collections Used
 
 - `congregations`
 - `activities`
 - `agendas`
 
-## Campos requeridos en `congregations`
+## Required Fields in `congregations`
 
-Cada congregacion que vaya a entrar debe tener:
+Each congregation intended to access must have:
 
 - `name`
 - `congregationNumber`
 - `loginEnabled`
-- `loginAlias` opcional pero recomendado
+- `loginAlias` (optional but recommended)
 
-`loginAlias` debe ser una version simple del nombre para facilitar el acceso.
-Ejemplo: `brisas del llano - saravena` -> `brisas del llano - saravena`
+`loginAlias` should be a simplified version of the name to facilitate access.
+Example: `Brisas del Llano - Saravena` -> `brisas del llano - saravena`
 
-## Seleccion de agenda
+## Agenda Selection
 
-- La app busca `activities.type == "Congregation Visit"`.
-- Filtra por `activities.congregation_id`.
-- Muestra la proxima visita.
-- Si no hay una futura, muestra la ultima visita pasada.
-- Guarda la agenda en `agendas/{activityId}`.
+- The app searches for `activities.type == "Congregation Visit"`.
+- Filters by `activities.congregation_id`.
+- Displays the upcoming visit.
+- If there is no future visit, it displays the most recent past visit.
+- Saves the agenda in `agendas/{activityId}`.
 
-## Estructura
+## Structure
 
-- `index.html`: shell principal.
-- `src/main.js`: login, carga y guardado de agenda.
-- `src/firebase.js`: cliente Firebase.
-- `firestore.rules`: reglas por `congregation_id`.
-- `functions/index.js`: validacion del codigo y custom token.
+- `index.html`: Main shell.
+- `src/main.js`: Login, loading, and saving of the agenda.
+- `src/firebase.js`: Firebase client.
+- `firestore.rules`: Rules based on `congregation_id`.
+- `functions/index.js`: Code validation and custom token generation.
 
-## Importante
+## Important
 
-- En Firebase Authentication debe estar habilitado Custom Auth en el proyecto que emite el token.
-- La funcion y el cliente deben usar el mismo proyecto Firebase.
-- Si cambia el `congregationNumber` de una congregacion, el acceso anterior deja de servir.
+- Custom Auth must be enabled in the Firebase project that issues the token.
+- Both the function and the client must use the same Firebase project.
+- If a congregation's `congregationNumber` changes, the previous access will stop working.
