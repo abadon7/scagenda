@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agenda de Visita</title>
+</head>
+
+<body>
+  <div class="app-shell">
+    <section id="configPanel" class="panel panel--highlight notice-panel hidden">
+      <div class="panel__title-row">
+        <div>
+          <p class="eyebrow">Configuración</p>
+          <h2>FIREBASE NO CONFIGURADO</h2>
+        </div>
+      </div>
+      <div class="notice-panel__body">
+        <p id="configMessage" class="helper-text notice-text">
+          Complete las variables `VITE_FIREBASE_*` para activar el acceso de ancianos y la agenda en Firestore.
+        </p>
+      </div>
+    </section>
+
+    <section id="authScreen" class="auth-screen">
+      <header class="hero">
+        <div class="hero__masthead">
+          <div class="hero__badge">AGENDA DIGITAL</div>
+          <p class="hero__kicker">VISITA DEL SUPERINTENDENTE VIAJANTE</p>
+        </div>
+        <h1>Entre con el nombre y número de su congregación.</h1>
+        <p>
+          Verá la próxima visita programada. Si ya pasó la fecha, verá la
+          agenda de la visita más reciente.
+        </p>
+      </header>
+
+      <section class="panel panel--highlight auth-panel">
+        <div class="panel__title-row">
+          <div>
+            <p class="eyebrow">Acceso</p>
+            <h2>INGRESO DE CONGREGACIÓN</h2>
+          </div>
+        </div>
+        <div class="notice-panel__body">
+          <p id="authMessage" class="helper-text notice-text">
+            Escriba la congregación y su número para abrir la agenda.
+          </p>
+          <form id="loginForm" class="auth-form">
+            <label class="field">
+              <span>Congregación</span>
+              <input id="congregationNameInput" type="text" autocomplete="organization"
+                placeholder="Ej. Brisas del llano - Saravena" required />
+            </label>
+            <label class="field">
+              <span>Número de congregación</span>
+              <input id="congregationCodeInput" type="text" inputmode="numeric" autocomplete="one-time-code"
+                placeholder="Ej. 65128" required />
+            </label>
+            <button id="loginButton" class="primary-button" type="submit">
+              Entrar a la agenda
+            </button>
+          </form>
+        </div>
+      </section>
+    </section>
+
+    <div id="agendaScreen" class="hidden">
+      <div class="top-progress" aria-hidden="true">
+        <div id="completionBar" class="top-progress__bar"></div>
+      </div>
+
+      <header class="hero">
+        <div class="hero__masthead">
+          <div class="hero__badge">AGENDA DIGITAL</div>
+          <p class="hero__kicker">VISITA DEL SUPERINTENDENTE VIAJANTE</p>
+        </div>
+        <h1>Henry Vélez</h1>
+        <p>
+          Llene cuidadosamente la agenda para que todo esté listo para la visita.
+        </p>
+        <div class="session-strip">
+          <div class="session-strip__user">
+            <span class="summary-strip__label">Sesión</span>
+            <strong id="userEmail">Sin sesión</strong>
+          </div>
+          <button id="logoutButton" class="ghost-button" type="button">
+            Cerrar sesión
+          </button>
+        </div>
+
+      </header>
+
+      <section id="appMessagePanel" class="panel notice-panel hidden">
+        <div class="notice-panel__body">
+          <p id="appMessage" class="helper-text notice-text"></p>
+        </div>
+      </section>
+
+      <main class="layout">
+        <section class="panel panel--highlight">
+          <div class="panel__title-row">
+            <div>
+              <p class="eyebrow">Datos generales</p>
+              <h2>INFORMACIÓN PRINCIPAL</h2>
+            </div>
+            <button class="ghost-button" id="clearDataButton" type="button">
+              Restablecer
+            </button>
+          </div>
+
+          <div class="summary-strip">
+            <div class="summary-strip__item">
+              <span class="summary-strip__label">Congregación</span>
+              <strong id="summaryCongregation">Sin definir</strong>
+            </div>
+            <div class="summary-strip__item">
+              <span class="summary-strip__label">Inicia</span>
+              <strong id="summaryDate">Pendiente</strong>
+            </div>
+            <div class="summary-strip__item">
+              <span class="summary-strip__label">Avance</span>
+              <strong id="summaryProgress">0%</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel__title-row">
+            <div>
+              <p class="eyebrow">Reuniones</p>
+              <h2>REUNIONES DE CONGREGACIÓN</h2>
+            </div>
+          </div>
+          <div id="meetingsList" class="stack"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel__title-row">
+            <div>
+              <p class="eyebrow">Predicación</p>
+              <h2>SERVICIO DEL CAMPO</h2>
+            </div>
+          </div>
+          <p class="helper-text">
+            Programe horarios convenientes para la mañana y la tarde.
+          </p>
+          <div id="fieldServiceList" class="stack"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel__title-row">
+            <div>
+              <p class="eyebrow">Pastoreo</p>
+              <h2>HENRY VÉLEZ</h2>
+            </div>
+          </div>
+          <p class="warning-text warning-text--band">
+            Idealmente, estos arreglos no deben interrumpir la predicación de
+            casa en casa.
+          </p>
+          <div id="henryList" class="stack"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel__title-row">
+            <div>
+              <p class="eyebrow">Estudios</p>
+              <h2>CAROLINA VÉLEZ</h2>
+            </div>
+          </div>
+          <p class="warning-text warning-text--band">
+            Idealmente, estos arreglos no deben interrumpir la predicación de
+            casa en casa.
+          </p>
+          <div id="carolinaList" class="stack"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel__title-row">
+            <div>
+              <p class="eyebrow">Comidas</p>
+              <h2>ARREGLOS PARA ALMUERZOS</h2>
+            </div>
+          </div>
+          <div id="lunchList" class="stack"></div>
+        </section>
+      </main>
+
+      <footer class="footer-bar">
+        <div>
+          <strong id="saveStatus">Conectando con Firestore...</strong>
+          <p>La agenda se guarda para su congregación.</p>
+        </div>
+        <button class="primary-button" id="downloadButton" type="button">
+          Descargar respaldo
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <template id="meetingTemplate">
+    <article class="card">
+      <div class="card__header">
+        <div>
+          <h3 class="card__title"></h3>
+          <p class="card__subtitle"></p>
+        </div>
+      </div>
+      <div class="grid grid--three"></div>
+    </article>
+  </template>
+
+  <template id="fieldServiceTemplate">
+    <article class="card">
+      <div class="card__header">
+        <div>
+          <h3 class="card__title"></h3>
+        </div>
+        <span class="tag"></span>
+      </div>
+      <div class="grid grid--two"></div>
+    </article>
+  </template>
+
+  <template id="visitTemplate">
+    <article class="card">
+      <div class="card__header">
+        <div>
+          <h3 class="card__title"></h3>
+          <p class="card__subtitle"></p>
+        </div>
+      </div>
+      <div class="grid grid--two visit-grid"></div>
+    </article>
+  </template>
+
+  <template id="lunchTemplate">
+    <article class="card">
+      <div class="card__header">
+        <div>
+          <h3 class="card__title"></h3>
+        </div>
+      </div>
+      <div class="grid grid--two"></div>
+    </article>
+  </template>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
