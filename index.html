@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Agenda de Visita</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
 </head>
 
 <body>
@@ -73,16 +74,16 @@
 
       <header class="hero">
         <div class="hero__masthead">
-          <div class="hero__badge">AGENDA DIGITAL</div>
-          <p class="hero__kicker">VISITA DEL SUPERINTENDENTE VIAJANTE</p>
+          <div class="hero__badge">AGENDA PARA LA VISITA DEL SC</div>
+          <!-- <p class="hero__kicker">VISITA DEL SUPERINTENDENTE VIAJANTE</p> -->
         </div>
-        <h1>Henry Vélez</h1>
+        <!-- <h1>Henry Vélez</h1> -->
         <p>
           Llene cuidadosamente la agenda para que todo esté listo para la visita.
         </p>
         <div class="session-strip">
           <div class="session-strip__user">
-            <span class="summary-strip__label">Sesión</span>
+            <span class="summary-strip__label">Congregación</span>
             <strong id="userEmail">Sin sesión</strong>
           </div>
           <button id="logoutButton" class="ghost-button" type="button">
@@ -99,7 +100,7 @@
       </section>
 
       <main class="layout">
-        <section class="panel panel--highlight">
+        <section id="section-info" class="panel panel--highlight">
           <div class="panel__title-row">
             <div>
               <p class="eyebrow">Datos generales</p>
@@ -126,21 +127,21 @@
           </div>
         </section>
 
-        <section class="panel">
+        <section id="section-reuniones" class="panel">
           <div class="panel__title-row">
             <div>
               <p class="eyebrow">Reuniones</p>
-              <h2>REUNIONES DE CONGREGACIÓN</h2>
+              <!-- <h2>REUNIONES DE CONGREGACIÓN</h2> -->
             </div>
           </div>
           <div id="meetingsList" class="stack"></div>
         </section>
 
-        <section class="panel">
+        <section id="section-predicacion" class="panel">
           <div class="panel__title-row">
             <div>
               <p class="eyebrow">Predicación</p>
-              <h2>SERVICIO DEL CAMPO</h2>
+              <!-- <h2>SERVICIO DEL CAMPO</h2> -->
             </div>
           </div>
           <p class="helper-text">
@@ -149,7 +150,7 @@
           <div id="fieldServiceList" class="stack"></div>
         </section>
 
-        <section class="panel">
+        <section id="section-henry" class="panel">
           <div class="panel__title-row">
             <div>
               <p class="eyebrow">Pastoreo</p>
@@ -163,7 +164,7 @@
           <div id="henryList" class="stack"></div>
         </section>
 
-        <section class="panel">
+        <section id="section-carolina" class="panel">
           <div class="panel__title-row">
             <div>
               <p class="eyebrow">Estudios</p>
@@ -177,26 +178,98 @@
           <div id="carolinaList" class="stack"></div>
         </section>
 
-        <section class="panel">
-          <div class="panel__title-row">
-            <div>
-              <p class="eyebrow">Comidas</p>
-              <h2>ARREGLOS PARA ALMUERZOS</h2>
-            </div>
+        <section id="section-almuerzos" class="panel">
+          <div class="editorial-header">
+            <p class="editorial-eyebrow">SECCIÓN DE LOGÍSTICA</p>
+            <h2 class="editorial-title">ARREGLOS PARA<br>ALMUERZOS</h2>
           </div>
           <div id="lunchList" class="stack"></div>
         </section>
       </main>
 
+      <nav id="mobileNav" class="mobile-nav" aria-label="Secciones de la agenda">
+        <button class="mobile-nav__btn" data-section="section-reuniones" type="button" aria-label="Reuniones">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+          <span>Reuniones</span>
+        </button>
+        <button class="mobile-nav__btn" data-section="section-predicacion" type="button" aria-label="Predicación">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="2" y1="12" x2="22" y2="12" />
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+          </svg>
+          <span>Predicación</span>
+        </button>
+        <button class="mobile-nav__btn" data-section="section-henry" type="button" aria-label="Henry">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          <span>Henry</span>
+        </button>
+        <button class="mobile-nav__btn" data-section="section-carolina" type="button" aria-label="Carolina">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+          <span>Carolina</span>
+        </button>
+        <button class="mobile-nav__btn" data-section="section-almuerzos" type="button" aria-label="Almuerzos">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
+            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+            <line x1="6" y1="1" x2="6" y2="4" />
+            <line x1="10" y1="1" x2="10" y2="4" />
+            <line x1="14" y1="1" x2="14" y2="4" />
+          </svg>
+          <span>Almuerzos</span>
+        </button>
+      </nav>
+
       <footer class="footer-bar">
         <div>
-          <strong id="saveStatus">Conectando con Firestore...</strong>
-          <p>La agenda se guarda para su congregación.</p>
+          <strong id="saveStatus">Conectando...</strong>
+          <!-- <p>La agenda se guarda para su congregación.</p> -->
         </div>
         <button class="primary-button" id="downloadButton" type="button">
           Descargar respaldo
         </button>
       </footer>
+
+      <nav id="dotToc" class="dot-toc" aria-label="Navegación rápida de secciones">
+        <button class="dot-toc__dot" data-section="section-reuniones" type="button" aria-label="Reuniones">
+          <span class="dot-toc__label">Reuniones</span>
+          <span class="dot-toc__circle"></span>
+        </button>
+        <button class="dot-toc__dot" data-section="section-predicacion" type="button" aria-label="Predicación">
+          <span class="dot-toc__label">Predicación</span>
+          <span class="dot-toc__circle"></span>
+        </button>
+        <button class="dot-toc__dot" data-section="section-henry" type="button" aria-label="Henry">
+          <span class="dot-toc__label">Henry</span>
+          <span class="dot-toc__circle"></span>
+        </button>
+        <button class="dot-toc__dot" data-section="section-carolina" type="button" aria-label="Carolina">
+          <span class="dot-toc__label">Carolina</span>
+          <span class="dot-toc__circle"></span>
+        </button>
+        <button class="dot-toc__dot" data-section="section-almuerzos" type="button" aria-label="Almuerzos">
+          <span class="dot-toc__label">Almuerzos</span>
+          <span class="dot-toc__circle"></span>
+        </button>
+      </nav>
     </div>
   </div>
 
@@ -237,13 +310,30 @@
   </template>
 
   <template id="lunchTemplate">
-    <article class="card">
-      <div class="card__header">
-        <div>
-          <h3 class="card__title"></h3>
+    <article class="lunch-card">
+      <header class="lunch-card__header">
+        <h3 class="lunch-card__day"></h3>
+        <div class="lunch-card__pill">
+          <input type="time" class="lunch-card__time-input" aria-label="Hora">
+        </div>
+      </header>
+      <div class="lunch-card__body">
+        <div class="lunch-field">
+          <span class="lunch-eyebrow">HOST FAMILY</span>
+          <input type="text" class="lunch-input lunch-input--family" placeholder="Familia o lugar">
+        </div>
+        <div class="lunch-field">
+          <span class="lunch-eyebrow">CONTACT & ADDRESS</span>
+          <div class="lunch-icon-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <textarea rows="1" class="lunch-input lunch-input--address" placeholder="Dirección"></textarea>
+          </div>
+          <div class="lunch-icon-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <input type="text" class="lunch-input lunch-input--notes" placeholder="Notas o teléfono">
+          </div>
         </div>
       </div>
-      <div class="grid grid--two"></div>
     </article>
   </template>
 

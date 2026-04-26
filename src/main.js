@@ -50,17 +50,22 @@ const CAROLINA_VISITS = [
   { day: "Miércoles", subtitle: "Estudios y revisitas" },
   { day: "Jueves", subtitle: "En la mañana" },
   { day: "Viernes", subtitle: "Estudios y revisitas" },
+  { day: "Miércoles", subtitle: "Estudio adicional", isExtra: true },
+  { day: "Viernes", subtitle: "Estudio adicional", isExtra: true },
 ];
 const LUNCH_DAYS = [
-  { day: "Martes", time: "12 M", note: "Preguntar" },
-  { day: "Miércoles", time: "12 M", note: "" },
-  { day: "Jueves", time: "12 M", note: "" },
-  { day: "Viernes", time: "12 M", note: "" },
-  { day: "Sábado", time: "12 M", note: "" },
-  { day: "Domingo", time: "12 M", note: "" },
+  { day: "Martes", time: "12:00", note: "Preguntar" },
+  { day: "Miércoles", time: "12:00", note: "" },
+  { day: "Jueves", time: "12:00", note: "" },
+  { day: "Viernes", time: "12:00", note: "" },
+  { day: "Sábado", time: "12:00", note: "" },
+  { day: "Domingo", time: "12:00", note: "" },
 ];
 
 let dom = {};
+const activeExtras = new Set();
+let mobileNavInitialized = false;
+let dotTocInitialized = false;
 
 const appState = {
   auth: null,
@@ -293,7 +298,7 @@ async function loadAgendaForCongregation(user) {
     renderAgenda();
     hideAppMessage();
     showAgendaScreen();
-    setSaveStatus("Conectado con Firestore");
+    setSaveStatus("Agenda cargada");
   } catch (error) {
     clearSessionState(false);
     appState.agenda = buildDefaultAgenda();
@@ -398,11 +403,10 @@ function buildDefaultAgenda(activity = null, congregation = null) {
       subtitle: entry.subtitle,
     })),
     carolina: CAROLINA_VISITS.map((entry) => ({
-      day: entry.day,
+      ...entry,
       time: "",
       sister: "",
       lesson: "",
-      subtitle: entry.subtitle,
     })),
     lunches: LUNCH_DAYS.map((entry) => ({
       day: entry.day,
@@ -439,6 +443,92 @@ function renderAgenda() {
   renderCarolina();
   renderLunches();
   renderSummary();
+  initMobileNav();
+  initDotToc();
+}
+
+const NAV_SECTIONS = [
+  "section-reuniones",
+  "section-predicacion",
+  "section-henry",
+  "section-carolina",
+  "section-almuerzos",
+];
+
+function initMobileNav() {
+  if (mobileNavInitialized) return;
+  mobileNavInitialized = true;
+
+  const nav = document.querySelector("#mobileNav");
+  if (!nav) return;
+
+  activateMobileSection(NAV_SECTIONS[0]);
+
+  nav.querySelectorAll(".mobile-nav__btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      activateMobileSection(btn.dataset.section);
+    });
+  });
+}
+
+function activateMobileSection(targetId) {
+  const isMobile = window.matchMedia("(max-width: 639px)").matches;
+  const nav = document.querySelector("#mobileNav");
+  if (!nav) return;
+
+  NAV_SECTIONS.forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (isMobile) {
+      el.classList.toggle("section--hidden", id !== targetId);
+    } else {
+      el.classList.remove("section--hidden");
+    }
+  });
+
+  nav.querySelectorAll(".mobile-nav__btn").forEach((btn) => {
+    btn.classList.toggle("mobile-nav__btn--active", btn.dataset.section === targetId);
+  });
+
+  if (isMobile) {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}
+
+function initDotToc() {
+  if (dotTocInitialized) return;
+  dotTocInitialized = true;
+
+  const nav = document.querySelector("#dotToc");
+  if (!nav) return;
+
+  // Click → smooth-scroll to section
+  nav.querySelectorAll(".dot-toc__dot").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const el = document.getElementById(btn.dataset.section);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+
+  // Scroll → highlight whichever section's top has passed 40% of the viewport
+  function updateActiveDot() {
+    const threshold = window.scrollY + window.innerHeight * 0.4;
+    let activeId = NAV_SECTIONS[0];
+
+    for (const id of NAV_SECTIONS) {
+      const el = document.getElementById(id);
+      if (el && el.offsetTop <= threshold) {
+        activeId = id;
+      }
+    }
+
+    nav.querySelectorAll(".dot-toc__dot").forEach((btn) => {
+      btn.classList.toggle("dot-toc__dot--active", btn.dataset.section === activeId);
+    });
+  }
+
+  window.addEventListener("scroll", updateActiveDot, { passive: true });
+  updateActiveDot();
 }
 
 function renderMeetings() {
@@ -447,7 +537,7 @@ function renderMeetings() {
   appState.agenda.meetings.forEach((meeting, index) => {
     const fragment = dom.meetingTemplate.content.cloneNode(true);
     fragment.querySelector(".card__title").textContent = meeting.title;
-    fragment.querySelector(".card__subtitle").textContent = "Complete solo lo necesario";
+    /* fragment.querySelector(".card__subtitle").textContent = "Complete solo lo necesario"; */
 
     const grid = fragment.querySelector(".grid");
     grid.append(
@@ -488,9 +578,18 @@ function renderFieldService() {
     grid.append(
       createField({
         label: "AM",
+        type: "time",
+        min: "00:00",
+        max: "11:59",
         value: entry.am,
-        placeholder: "Hora de salida",
-        onInput: (value) => updateNested("fieldService", index, "am", value),
+        onInput: (value, target) => {
+          const enforced = forceAM(value);
+          if (enforced !== value) {
+            value = enforced;
+            target.value = value;
+          }
+          updateNested("fieldService", index, "am", value);
+        },
       }),
       createField({
         label: "Lugar AM",
@@ -500,9 +599,18 @@ function renderFieldService() {
       }),
       createField({
         label: "PM",
+        type: "time",
+        min: "12:00",
+        max: "23:59",
         value: entry.pm,
-        placeholder: "Hora de salida",
-        onInput: (value) => updateNested("fieldService", index, "pm", value),
+        onInput: (value, target) => {
+          const enforced = forcePM(value);
+          if (enforced !== value) {
+            value = enforced;
+            target.value = value;
+          }
+          updateNested("fieldService", index, "pm", value);
+        },
       }),
       createField({
         label: "Lugar PM",
@@ -528,8 +636,8 @@ function renderHenry() {
     grid.append(
       createField({
         label: "Hora",
+        type: "time",
         value: entry.time,
-        placeholder: "Ej. 10:30 a. m.",
         onInput: (value) => updateNested("henry", index, "time", value),
       }),
       createField({
@@ -550,7 +658,7 @@ function renderHenry() {
         value: entry.notes,
         placeholder: "Anote detalles importantes",
         onInput: (value) => updateNested("henry", index, "notes", value),
-      }),
+      })
     );
 
     dom.henryList.append(fragment);
@@ -560,35 +668,53 @@ function renderHenry() {
 function renderCarolina() {
   dom.carolinaList.innerHTML = "";
 
-  appState.agenda.carolina.forEach((entry, index) => {
-    const fragment = dom.visitTemplate.content.cloneNode(true);
-    fragment.querySelector(".card__title").textContent = entry.day;
-    fragment.querySelector(".card__subtitle").textContent = entry.subtitle;
+  const entriesWithIndex = appState.agenda.carolina.map((entry, index) => ({ entry, index }));
+  const dayOrder = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+  entriesWithIndex.sort((a, b) => dayOrder.indexOf(a.entry.day) - dayOrder.indexOf(b.entry.day));
 
-    const grid = fragment.querySelector(".grid");
-    grid.append(
-      createField({
-        label: "Hora",
-        value: entry.time,
-        placeholder: "Ej. 9:00 a. m.",
-        onInput: (value) => updateNested("carolina", index, "time", value),
-      }),
-      createField({
-        label: "Hermana",
-        value: entry.sister,
-        placeholder: "Nombre y celular",
-        onInput: (value) => updateNested("carolina", index, "sister", value),
-      }),
-      createField({
-        label: "Lección",
-        type: "textarea",
-        value: entry.lesson,
-        placeholder: "Lección o notas",
-        onInput: (value) => updateNested("carolina", index, "lesson", value),
-      }),
-    );
+  entriesWithIndex.forEach(({ entry, index }) => {
+    const isEmpty = !entry.time && !entry.sister && !entry.lesson;
+    const isVisible = !entry.isExtra || !isEmpty || activeExtras.has(index);
 
-    dom.carolinaList.append(fragment);
+    if (isVisible) {
+      const fragment = dom.visitTemplate.content.cloneNode(true);
+      fragment.querySelector(".card__title").textContent = entry.day;
+      fragment.querySelector(".card__subtitle").textContent = entry.subtitle;
+
+      const grid = fragment.querySelector(".grid");
+      grid.append(
+        createField({
+          label: "Hora",
+          type: "time",
+          value: entry.time,
+          onInput: (value) => updateNested("carolina", index, "time", value),
+        }),
+        createField({
+          label: "Hermana",
+          value: entry.sister,
+          placeholder: "Nombre y celular",
+          onInput: (value) => updateNested("carolina", index, "sister", value),
+        }),
+        createField({
+          label: "Lección",
+          type: "textarea",
+          value: entry.lesson,
+          placeholder: "Lección o notas",
+          onInput: (value) => updateNested("carolina", index, "lesson", value),
+        })
+      );
+
+      dom.carolinaList.append(fragment);
+    } else {
+      const btn = document.createElement("button");
+      btn.className = "ghost-button ghost-button--dash";
+      btn.textContent = `+ Añadir otro estudio (${entry.day})`;
+      btn.onclick = () => {
+        activeExtras.add(index);
+        renderCarolina();
+      };
+      dom.carolinaList.append(btn);
+    }
   });
 }
 
@@ -596,44 +722,44 @@ function renderLunches() {
   dom.lunchList.innerHTML = "";
 
   appState.agenda.lunches.forEach((entry, index) => {
-    const fragment = dom.lunchTemplate.content.cloneNode(true);
-    const title = entry.note ? `${entry.day} (${entry.note})` : entry.day;
-    fragment.querySelector(".card__title").textContent = title;
+    // Auto-migrate old "12 M" format from the database
+    if (entry.time === "12 M") {
+      entry.time = "12:00";
+    }
 
-    const grid = fragment.querySelector(".grid");
-    grid.append(
-      createField({
-        label: "Hora",
-        value: entry.time,
-        placeholder: "Ej. 12 M",
-        onInput: (value) => updateNested("lunches", index, "time", value),
-      }),
-      createField({
-        label: "Familia",
-        value: entry.family,
-        placeholder: "Apellido o familia",
-        onInput: (value) => updateNested("lunches", index, "family", value),
-      }),
-      createField({
-        label: "Dirección / Teléfono",
-        type: "textarea",
-        value: entry.contact,
-        placeholder: "Dirección, teléfono o referencia",
-        onInput: (value) => updateNested("lunches", index, "contact", value),
-      }),
-      createField({
-        label: "Nota",
-        value: entry.note,
-        placeholder: "Ej. Confirmar el martes",
-        onInput: (value) => updateNested("lunches", index, "note", value),
-      }),
-    );
+    const fragment = dom.lunchTemplate.content.cloneNode(true);
+    const card = fragment.querySelector(".lunch-card");
+    const dayEl = fragment.querySelector(".lunch-card__day");
+    const timeInput = fragment.querySelector(".lunch-card__time-input");
+    const familyInput = fragment.querySelector(".lunch-input--family");
+    const addressInput = fragment.querySelector(".lunch-input--address");
+    const notesInput = fragment.querySelector(".lunch-input--notes");
+
+    // Title & Color
+    dayEl.textContent = entry.day;
+    if (entry.day === "Martes" || entry.day === "Domingo") {
+      card.classList.add("lunch-card--red");
+    }
+
+    // Values
+    timeInput.value = entry.time || "";
+    familyInput.value = entry.family || "";
+    // Note: Previously, contact and note were separate fields. The new design has 2 lines under CONTACT & ADDRESS. 
+    // I'll map contact to address, and note to notes.
+    addressInput.value = entry.contact || "";
+    notesInput.value = entry.note || "";
+
+    // Listeners
+    timeInput.addEventListener("input", (e) => updateNested("lunches", index, "time", e.target.value));
+    familyInput.addEventListener("input", (e) => updateNested("lunches", index, "family", e.target.value));
+    addressInput.addEventListener("input", (e) => updateNested("lunches", index, "contact", e.target.value));
+    notesInput.addEventListener("input", (e) => updateNested("lunches", index, "note", e.target.value));
 
     dom.lunchList.append(fragment);
   });
 }
 
-function createField({ label, value, onInput, type = "text", placeholder = "", options = [] }) {
+function createField({ label, value, onInput, type = "text", placeholder = "", options = [], min, max }) {
   const field = document.createElement("label");
   field.className = "field";
 
@@ -661,9 +787,11 @@ function createField({ label, value, onInput, type = "text", placeholder = "", o
   input.value = value || "";
   if (type !== "select") {
     input.placeholder = placeholder;
+    if (min) input.min = min;
+    if (max) input.max = max;
   }
 
-  input.addEventListener(type === "select" ? "change" : "input", (event) => onInput(event.target.value));
+  input.addEventListener(type === "select" ? "change" : "input", (event) => onInput(event.target.value, event.target));
 
   field.append(caption, input);
   return field;
@@ -689,10 +817,10 @@ function queueSave() {
         updatedAt: serverTimestamp(),
         updatedByCongregation: appState.congregationId || "",
       });
-      setSaveStatus("Cambios guardados en Firestore");
+      setSaveStatus("Cambios guardados");
     } catch (error) {
       setSaveStatus("No se pudo guardar");
-      showAgendaMessage(normalizeFirebaseError(error, "No se pudo guardar la agenda en Firestore."));
+      showAgendaMessage(normalizeFirebaseError(error, "No se pudo guardar la agenda."));
     }
   }, 300);
 }
@@ -920,4 +1048,26 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
+}
+
+function forceAM(value) {
+  if (!value) return value;
+  let [h, m] = value.split(":");
+  let hr = parseInt(h, 10);
+  if (hr >= 12) {
+    hr = hr % 12;
+    return `${String(hr).padStart(2, "0")}:${m}`;
+  }
+  return value;
+}
+
+function forcePM(value) {
+  if (!value) return value;
+  let [h, m] = value.split(":");
+  let hr = parseInt(h, 10);
+  if (hr < 12) {
+    hr = hr + 12;
+    return `${String(hr).padStart(2, "0")}:${m}`;
+  }
+  return value;
 }
