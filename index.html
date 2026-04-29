@@ -128,21 +128,17 @@
         </section>
 
         <section id="section-reuniones" class="panel">
-          <div class="panel__title-row">
-            <div>
-              <p class="eyebrow">Reuniones</p>
-              <!-- <h2>REUNIONES DE CONGREGACIÓN</h2> -->
-            </div>
+          <div class="editorial-header">
+            <p class="editorial-eyebrow">PROGRAMA ESPIRITUAL</p>
+            <h2 class="editorial-title">REUNIONES DE<br>CONGREGACIÓN</h2>
           </div>
           <div id="meetingsList" class="stack"></div>
         </section>
 
         <section id="section-predicacion" class="panel">
-          <div class="panel__title-row">
-            <div>
-              <p class="eyebrow">Predicación</p>
-              <!-- <h2>SERVICIO DEL CAMPO</h2> -->
-            </div>
+          <div class="editorial-header">
+            <p class="editorial-eyebrow">MINISTERIO</p>
+            <h2 class="editorial-title">SERVICIO DEL<br>CAMPO</h2>
           </div>
           <p class="helper-text">
             Programe horarios convenientes para la mañana y la tarde.
@@ -151,30 +147,20 @@
         </section>
 
         <section id="section-henry" class="panel">
-          <div class="panel__title-row">
-            <div>
-              <p class="eyebrow">Pastoreo</p>
-              <h2>HENRY VÉLEZ</h2>
-            </div>
+          <div class="editorial-header editorial-header--person">
+            <p class="editorial-eyebrow editorial-eyebrow--person">PASTOREO · ESTUDIOS · REVISITAS</p>
+            <h2 class="editorial-title">HENRY<br>VÉLEZ</h2>
+            <p class="editorial-note">Idealmente no deben interrumpir la predicación.</p>
           </div>
-          <p class="warning-text warning-text--band">
-            Idealmente, estos arreglos no deben interrumpir la predicación de
-            casa en casa.
-          </p>
           <div id="henryList" class="stack"></div>
         </section>
 
         <section id="section-carolina" class="panel">
-          <div class="panel__title-row">
-            <div>
-              <p class="eyebrow">Estudios</p>
-              <h2>CAROLINA VÉLEZ</h2>
-            </div>
+          <div class="editorial-header editorial-header--person">
+            <p class="editorial-eyebrow editorial-eyebrow--person">ESTUDIOS · REVISITAS</p>
+            <h2 class="editorial-title">CAROLINA<br>VÉLEZ</h2>
+            <p class="editorial-note">Idealmente no deben interrumpir la predicación.</p>
           </div>
-          <p class="warning-text warning-text--band">
-            Idealmente, estos arreglos no deben interrumpir la predicación de
-            casa en casa.
-          </p>
           <div id="carolinaList" class="stack"></div>
         </section>
 
@@ -274,26 +260,59 @@
   </div>
 
   <template id="meetingTemplate">
-    <article class="card">
-      <div class="card__header">
-        <div>
-          <h3 class="card__title"></h3>
-          <p class="card__subtitle"></p>
+    <article class="lunch-card">
+      <header class="lunch-card__header">
+        <h3 class="lunch-card__day meeting-card__title"></h3>
+        <div class="lunch-card__pill">
+          <input type="time" class="lunch-card__time-input meeting-card__time-input" aria-label="Hora">
+        </div>
+      </header>
+      <div class="lunch-card__body">
+        <div class="lunch-field">
+          <span class="lunch-eyebrow">DÍA</span>
+          <select class="lunch-input meeting-input--day"></select>
+        </div>
+        <div class="lunch-field">
+          <span class="lunch-eyebrow">LUGAR</span>
+          <div class="lunch-icon-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <input type="text" class="lunch-input meeting-input--place" placeholder="Dirección o salón">
+          </div>
         </div>
       </div>
-      <div class="grid grid--three"></div>
     </article>
   </template>
 
   <template id="fieldServiceTemplate">
-    <article class="card">
-      <div class="card__header">
-        <div>
-          <h3 class="card__title"></h3>
+    <article class="lunch-card">
+      <header class="lunch-card__header">
+        <h3 class="lunch-card__day field-service-card__title"></h3>
+        <span class="tag field-service-card__tag"></span>
+      </header>
+      <div class="lunch-card__body">
+        <div class="lunch-field">
+          <span class="lunch-eyebrow">MAÑANA (AM)</span>
+          <div class="lunch-icon-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <input type="time" class="lunch-input field-input--am" min="00:00" max="11:59">
+          </div>
+          <div class="lunch-icon-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <input type="text" class="lunch-input field-input--am-place" placeholder="Punto de encuentro">
+          </div>
         </div>
-        <span class="tag"></span>
+        <div class="lunch-field">
+          <span class="lunch-eyebrow">TARDE (PM)</span>
+          <div class="lunch-icon-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <input type="time" class="lunch-input field-input--pm" min="12:00" max="23:59">
+          </div>
+          <div class="lunch-icon-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <input type="text" class="lunch-input field-input--pm-place" placeholder="Punto de encuentro">
+          </div>
+        </div>
       </div>
-      <div class="grid grid--two"></div>
     </article>
   </template>
 

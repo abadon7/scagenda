@@ -79,6 +79,7 @@ const appState = {
   agendaRef: null,
   agendaDoc: null,
   agenda: buildDefaultAgenda(),
+  isPreview: false,
 };
 
 let saveTimeout;
@@ -205,6 +206,12 @@ async function bootstrap() {
   appState.db = db;
   appState.functions = functions;
 
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("preview") === "true" || params.get("admin") === "true") {
+    loadAdminPreviewMode();
+    return;
+  }
+
   await setPersistence(auth, browserLocalPersistence);
 
   onAuthStateChanged(auth, async (user) => {
@@ -307,6 +314,33 @@ async function loadAgendaForCongregation(user) {
     renderAgenda();
     setSaveStatus("Acceso pendiente");
   }
+}
+
+function loadAdminPreviewMode() {
+  appState.isPreview = true;
+  appState.congregationName = "Congregación de Prueba";
+  appState.agenda = buildDefaultAgenda();
+
+  // Populate some dummy data for the UI check
+  appState.agenda.congregation = "Prueba - Ciudad Central";
+  appState.agenda.date = new Date().toISOString().split("T")[0];
+
+  appState.agenda.meetings[0].time = "19:00";
+  appState.agenda.meetings[0].place = "Salón del Reino A";
+  appState.agenda.meetings[1].time = "10:00";
+  appState.agenda.meetings[1].place = "Salón del Reino B";
+
+  appState.agenda.fieldService[0].am = "09:00";
+  appState.agenda.fieldService[0].amPlace = "Parque Principal";
+
+  appState.agenda.lunches[0].family = "Familia Pérez";
+  appState.agenda.lunches[0].contact = "Calle 10 #5-20";
+  appState.agenda.lunches[0].time = "12:30";
+
+  renderAgenda();
+  dom.userEmail.textContent = "Modo Vista Previa (Admin)";
+  showAgendaScreen();
+  setSaveStatus("Vista previa - Guardado desactivado");
 }
 
 async function fetchCongregation(congregationId) {
@@ -536,31 +570,27 @@ function renderMeetings() {
 
   appState.agenda.meetings.forEach((meeting, index) => {
     const fragment = dom.meetingTemplate.content.cloneNode(true);
-    fragment.querySelector(".card__title").textContent = meeting.title;
-    /* fragment.querySelector(".card__subtitle").textContent = "Complete solo lo necesario"; */
+    const titleEl = fragment.querySelector(".meeting-card__title");
+    const timeInput = fragment.querySelector(".meeting-card__time-input");
+    const daySelect = fragment.querySelector(".meeting-input--day");
+    const placeInput = fragment.querySelector(".meeting-input--place");
 
-    const grid = fragment.querySelector(".grid");
-    grid.append(
-      createField({
-        label: "Día",
-        type: "select",
-        value: meeting.day,
-        options: getMeetingOptions(meeting.title),
-        onInput: (value) => updateNested("meetings", index, "day", value),
-      }),
-      createField({
-        label: "Hora",
-        type: "time",
-        value: meeting.time,
-        onInput: (value) => updateNested("meetings", index, "time", value),
-      }),
-      createField({
-        label: "Lugar",
-        value: meeting.place,
-        placeholder: "Dirección o salón",
-        onInput: (value) => updateNested("meetings", index, "place", value),
-      }),
-    );
+    titleEl.textContent = meeting.title;
+    timeInput.value = meeting.time || "";
+
+    getMeetingOptions(meeting.title).forEach((optionValue) => {
+      const option = document.createElement("option");
+      option.value = optionValue;
+      option.textContent = optionValue || "Seleccione un día";
+      daySelect.append(option);
+    });
+    daySelect.value = meeting.day || "";
+
+    placeInput.value = meeting.place || "";
+
+    timeInput.addEventListener("input", (e) => updateNested("meetings", index, "time", e.target.value));
+    daySelect.addEventListener("change", (e) => updateNested("meetings", index, "day", e.target.value));
+    placeInput.addEventListener("input", (e) => updateNested("meetings", index, "place", e.target.value));
 
     dom.meetingsList.append(fragment);
   });
@@ -571,54 +601,51 @@ function renderFieldService() {
 
   appState.agenda.fieldService.forEach((entry, index) => {
     const fragment = dom.fieldServiceTemplate.content.cloneNode(true);
-    fragment.querySelector(".card__title").textContent = entry.day;
-    fragment.querySelector(".tag").textContent = entry.pm === "No programar" ? "PM libre" : "Día activo";
+    const titleEl = fragment.querySelector(".field-service-card__title");
+    const tagEl = fragment.querySelector(".field-service-card__tag");
+    const amInput = fragment.querySelector(".field-input--am");
+    const amPlaceInput = fragment.querySelector(".field-input--am-place");
+    const pmInput = fragment.querySelector(".field-input--pm");
+    const pmPlaceInput = fragment.querySelector(".field-input--pm-place");
 
-    const grid = fragment.querySelector(".grid");
-    grid.append(
-      createField({
-        label: "AM",
-        type: "time",
-        min: "00:00",
-        max: "11:59",
-        value: entry.am,
-        onInput: (value, target) => {
-          const enforced = forceAM(value);
-          if (enforced !== value) {
-            value = enforced;
-            target.value = value;
-          }
-          updateNested("fieldService", index, "am", value);
-        },
-      }),
-      createField({
-        label: "Lugar AM",
-        value: entry.amPlace,
-        placeholder: "Punto de encuentro",
-        onInput: (value) => updateNested("fieldService", index, "amPlace", value),
-      }),
-      createField({
-        label: "PM",
-        type: "time",
-        min: "12:00",
-        max: "23:59",
-        value: entry.pm,
-        onInput: (value, target) => {
-          const enforced = forcePM(value);
-          if (enforced !== value) {
-            value = enforced;
-            target.value = value;
-          }
-          updateNested("fieldService", index, "pm", value);
-        },
-      }),
-      createField({
-        label: "Lugar PM",
-        value: entry.pmPlace,
-        placeholder: "Punto de encuentro",
-        onInput: (value) => updateNested("fieldService", index, "pmPlace", value),
-      }),
-    );
+    titleEl.textContent = entry.day;
+    tagEl.textContent = entry.pm === "No programar" || entry.day === "Jueves" ? "PM libre" : "Día activo";
+
+    amInput.value = entry.am || "";
+    amPlaceInput.value = entry.amPlace || "";
+    pmInput.value = entry.pm || "";
+    pmPlaceInput.value = entry.pmPlace || "";
+
+    if (entry.day === "Jueves") {
+      const fields = fragment.querySelectorAll(".lunch-field");
+      if (fields.length > 1) {
+        fields[1].style.display = "none";
+      }
+    }
+
+    amInput.addEventListener("input", (e) => {
+      let value = e.target.value;
+      const enforced = forceAM(value);
+      if (enforced !== value) {
+        value = enforced;
+        e.target.value = value;
+      }
+      updateNested("fieldService", index, "am", value);
+    });
+
+    amPlaceInput.addEventListener("input", (e) => updateNested("fieldService", index, "amPlace", e.target.value));
+
+    pmInput.addEventListener("input", (e) => {
+      let value = e.target.value;
+      const enforced = forcePM(value);
+      if (enforced !== value) {
+        value = enforced;
+        e.target.value = value;
+      }
+      updateNested("fieldService", index, "pm", value);
+    });
+
+    pmPlaceInput.addEventListener("input", (e) => updateNested("fieldService", index, "pmPlace", e.target.value));
 
     dom.fieldServiceList.append(fragment);
   });
@@ -628,40 +655,53 @@ function renderHenry() {
   dom.henryList.innerHTML = "";
 
   appState.agenda.henry.forEach((entry, index) => {
-    const fragment = dom.visitTemplate.content.cloneNode(true);
-    fragment.querySelector(".card__title").textContent = entry.day;
-    fragment.querySelector(".card__subtitle").textContent = entry.subtitle;
+    const card = document.createElement("article");
+    card.className = "person-card";
 
-    const grid = fragment.querySelector(".grid");
-    grid.append(
-      createField({
-        label: "Hora",
-        type: "time",
-        value: entry.time,
-        onInput: (value) => updateNested("henry", index, "time", value),
-      }),
-      createField({
-        label: "Estudio / Pastoreo",
-        value: entry.type,
-        placeholder: "Tipo de visita",
-        onInput: (value) => updateNested("henry", index, "type", value),
-      }),
-      createField({
-        label: "Acompañante",
-        value: entry.companion,
-        placeholder: "Nombre y celular",
-        onInput: (value) => updateNested("henry", index, "companion", value),
-      }),
-      createField({
-        label: "Lección o información",
-        type: "textarea",
-        value: entry.notes,
-        placeholder: "Anote detalles importantes",
-        onInput: (value) => updateNested("henry", index, "notes", value),
-      })
+    // Header
+    const header = document.createElement("div");
+    header.className = "person-card__header";
+
+    const titleGroup = document.createElement("div");
+    titleGroup.className = "person-card__title-group";
+
+    const dayEl = document.createElement("h3");
+    dayEl.className = "person-card__day";
+    dayEl.textContent = entry.day;
+
+    const subtitleEl = document.createElement("p");
+    subtitleEl.className = "person-card__subtitle";
+    subtitleEl.textContent = entry.subtitle;
+
+    titleGroup.append(dayEl, subtitleEl);
+
+    const timePill = document.createElement("div");
+    timePill.className = "person-card__time-pill";
+    timePill.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+    const timeInput = document.createElement("input");
+    timeInput.type = "time";
+    timeInput.className = "person-card__time-input";
+    timeInput.value = entry.time || "";
+    timeInput.addEventListener("input", (e) => updateNested("henry", index, "time", e.target.value));
+    timePill.append(timeInput);
+
+    header.append(titleGroup, timePill);
+
+    // Body
+    const body = document.createElement("div");
+    body.className = "person-card__body";
+
+    body.append(
+      makePersonField("Estudio / Pastoreo", "text", entry.type, "Tipo de visita", "person-input--type",
+        (v) => updateNested("henry", index, "type", v)),
+      makePersonField("Acompañante", "text", entry.companion, "Nombre y celular", "",
+        (v) => updateNested("henry", index, "companion", v)),
+      makePersonField("Lección o información", "textarea", entry.notes, "Anote detalles importantes", "person-input--textarea",
+        (v) => updateNested("henry", index, "notes", v)),
     );
 
-    dom.henryList.append(fragment);
+    card.append(header, body);
+    dom.henryList.append(card);
   });
 }
 
@@ -677,34 +717,51 @@ function renderCarolina() {
     const isVisible = !entry.isExtra || !isEmpty || activeExtras.has(index);
 
     if (isVisible) {
-      const fragment = dom.visitTemplate.content.cloneNode(true);
-      fragment.querySelector(".card__title").textContent = entry.day;
-      fragment.querySelector(".card__subtitle").textContent = entry.subtitle;
+      const card = document.createElement("article");
+      card.className = "person-card";
 
-      const grid = fragment.querySelector(".grid");
-      grid.append(
-        createField({
-          label: "Hora",
-          type: "time",
-          value: entry.time,
-          onInput: (value) => updateNested("carolina", index, "time", value),
-        }),
-        createField({
-          label: "Hermana",
-          value: entry.sister,
-          placeholder: "Nombre y celular",
-          onInput: (value) => updateNested("carolina", index, "sister", value),
-        }),
-        createField({
-          label: "Lección",
-          type: "textarea",
-          value: entry.lesson,
-          placeholder: "Lección o notas",
-          onInput: (value) => updateNested("carolina", index, "lesson", value),
-        })
+      // Header
+      const header = document.createElement("div");
+      header.className = "person-card__header";
+
+      const titleGroup = document.createElement("div");
+      titleGroup.className = "person-card__title-group";
+
+      const dayEl = document.createElement("h3");
+      dayEl.className = "person-card__day";
+      dayEl.textContent = entry.day;
+
+      const subtitleEl = document.createElement("p");
+      subtitleEl.className = "person-card__subtitle";
+      subtitleEl.textContent = entry.subtitle;
+
+      titleGroup.append(dayEl, subtitleEl);
+
+      const timePill = document.createElement("div");
+      timePill.className = "person-card__time-pill";
+      timePill.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+      const timeInput = document.createElement("input");
+      timeInput.type = "time";
+      timeInput.className = "person-card__time-input";
+      timeInput.value = entry.time || "";
+      timeInput.addEventListener("input", (e) => updateNested("carolina", index, "time", e.target.value));
+      timePill.append(timeInput);
+
+      header.append(titleGroup, timePill);
+
+      // Body
+      const body = document.createElement("div");
+      body.className = "person-card__body";
+
+      body.append(
+        makePersonField("Hermana", "text", entry.sister, "Nombre y celular", "person-input--type",
+          (v) => updateNested("carolina", index, "sister", v)),
+        makePersonField("Lección", "textarea", entry.lesson, "Lección o notas", "person-input--textarea",
+          (v) => updateNested("carolina", index, "lesson", v)),
       );
 
-      dom.carolinaList.append(fragment);
+      card.append(header, body);
+      dom.carolinaList.append(card);
     } else {
       const btn = document.createElement("button");
       btn.className = "ghost-button ghost-button--dash";
@@ -797,6 +854,32 @@ function createField({ label, value, onInput, type = "text", placeholder = "", o
   return field;
 }
 
+function makePersonField(label, type, value, placeholder, extraClass, onInput) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "person-field";
+
+  const eyebrow = document.createElement("span");
+  eyebrow.className = "person-eyebrow";
+  eyebrow.textContent = label;
+
+  const input = type === "textarea"
+    ? document.createElement("textarea")
+    : document.createElement("input");
+
+  if (type !== "textarea") {
+    input.type = type;
+  }
+
+  input.className = `person-input${extraClass ? " " + extraClass : ""}`;
+  input.value = value || "";
+  input.placeholder = placeholder || "";
+
+  input.addEventListener("input", (e) => onInput(e.target.value));
+
+  wrapper.append(eyebrow, input);
+  return wrapper;
+}
+
 function updateNested(section, index, key, value) {
   appState.agenda[section][index][key] = value;
   renderSummary();
@@ -804,7 +887,7 @@ function updateNested(section, index, key, value) {
 }
 
 function queueSave() {
-  if (!appState.agendaRef) {
+  if (appState.isPreview || !appState.agendaRef) {
     return;
   }
 
@@ -900,6 +983,7 @@ async function handleLogout() {
 
 function clearSessionState(showAuth = true) {
   appState.user = null;
+  appState.isPreview = false;
   appState.congregationId = null;
   appState.congregationName = "";
   appState.congregationDoc = null;
