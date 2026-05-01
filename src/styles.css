@@ -433,33 +433,35 @@ textarea::placeholder {
 
 /* Almuerzos - Editorial Style */
 .editorial-header {
-  border-left: 2px solid var(--accent-red);
-  padding-left: 16px;
-  margin-bottom: 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 20px;
+  border-left: 3px solid var(--accent-red);
+  padding: 10px 20px;
+  margin-bottom: 2px;
 }
 
 .editorial-eyebrow {
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--accent-red);
-  margin: 0 0 4px 0;
+  display: none;
 }
 
 .editorial-title {
-  font-size: 1.5rem;
+  font-size: clamp(1.6rem, 5vw, 2.2rem);
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.0;
   color: var(--text);
   margin: 0;
   text-transform: uppercase;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 /* Person section variant (Henry / Carolina) */
 .editorial-header--person {
   border-left-color: var(--text);
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 0;
 }
 
 .editorial-eyebrow--person {
@@ -467,10 +469,14 @@ textarea::placeholder {
 }
 
 .editorial-note {
-  margin: 8px 0 0;
-  font-size: 0.8rem;
+  margin: 0;
+  font-size: 0.72rem;
   color: var(--muted);
   font-style: italic;
+  align-self: auto;
+  padding: 0;
+  flex: 1;
+  text-align: left;
 }
 
 /* Person Card — visit day card for Henry / Carolina */

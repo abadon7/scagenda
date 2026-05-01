@@ -42,9 +42,9 @@ const MEETING_DEFINITIONS = [
 
 const FIELD_SERVICE_DAYS = ["Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 const HENRY_VISITS = [
-  { day: "Miércoles", subtitle: "Estudios, revisitas y pastoreos" },
+  { day: "Miércoles", subtitle: "Estudios y pastoreos" },
   { day: "Jueves", subtitle: "Solo en la mañana" },
-  { day: "Viernes", subtitle: "Estudios, revisitas y pastoreos" },
+  { day: "Viernes", subtitle: "Estudios y pastoreos" },
 ];
 const CAROLINA_VISITS = [
   { day: "Miércoles", subtitle: "Estudios y revisitas" },

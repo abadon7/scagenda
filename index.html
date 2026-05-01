@@ -87,7 +87,7 @@
             <strong id="userEmail">Sin sesión</strong>
           </div>
           <button id="logoutButton" class="ghost-button" type="button">
-            Cerrar sesión
+            Salir
           </button>
         </div>
 
@@ -130,7 +130,7 @@
         <section id="section-reuniones" class="panel">
           <div class="editorial-header">
             <p class="editorial-eyebrow">PROGRAMA ESPIRITUAL</p>
-            <h2 class="editorial-title">REUNIONES DE<br>CONGREGACIÓN</h2>
+            <h2 class="editorial-title">REUNIONES DE CONGREGACIÓN</h2>
           </div>
           <div id="meetingsList" class="stack"></div>
         </section>
@@ -138,7 +138,7 @@
         <section id="section-predicacion" class="panel">
           <div class="editorial-header">
             <p class="editorial-eyebrow">MINISTERIO</p>
-            <h2 class="editorial-title">SERVICIO DEL<br>CAMPO</h2>
+            <h2 class="editorial-title">SERVICIO DEL CAMPO</h2>
           </div>
           <p class="helper-text">
             Programe horarios convenientes para la mañana y la tarde.
@@ -149,7 +149,7 @@
         <section id="section-henry" class="panel">
           <div class="editorial-header editorial-header--person">
             <p class="editorial-eyebrow editorial-eyebrow--person">PASTOREO · ESTUDIOS · REVISITAS</p>
-            <h2 class="editorial-title">HENRY<br>VÉLEZ</h2>
+            <h2 class="editorial-title">HENRY VÉLEZ</h2>
             <p class="editorial-note">Idealmente no deben interrumpir la predicación.</p>
           </div>
           <div id="henryList" class="stack"></div>
@@ -158,7 +158,7 @@
         <section id="section-carolina" class="panel">
           <div class="editorial-header editorial-header--person">
             <p class="editorial-eyebrow editorial-eyebrow--person">ESTUDIOS · REVISITAS</p>
-            <h2 class="editorial-title">CAROLINA<br>VÉLEZ</h2>
+            <h2 class="editorial-title">CAROLINA VÉLEZ</h2>
             <p class="editorial-note">Idealmente no deben interrumpir la predicación.</p>
           </div>
           <div id="carolinaList" class="stack"></div>
@@ -167,7 +167,7 @@
         <section id="section-almuerzos" class="panel">
           <div class="editorial-header">
             <p class="editorial-eyebrow">SECCIÓN DE LOGÍSTICA</p>
-            <h2 class="editorial-title">ARREGLOS PARA<br>ALMUERZOS</h2>
+            <h2 class="editorial-title">ARREGLOS PARA ALMUERZOS</h2>
           </div>
           <div id="lunchList" class="stack"></div>
         </section>
@@ -230,7 +230,7 @@
           <!-- <p>La agenda se guarda para su congregación.</p> -->
         </div>
         <button class="primary-button" id="downloadButton" type="button">
-          Descargar respaldo
+          Descargar
         </button>
       </footer>
 
@@ -275,7 +275,11 @@
         <div class="lunch-field">
           <span class="lunch-eyebrow">LUGAR</span>
           <div class="lunch-icon-row">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
             <input type="text" class="lunch-input meeting-input--place" placeholder="Dirección o salón">
           </div>
         </div>
@@ -293,22 +297,38 @@
         <div class="lunch-field">
           <span class="lunch-eyebrow">MAÑANA (AM)</span>
           <div class="lunch-icon-row">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
             <input type="time" class="lunch-input field-input--am" min="00:00" max="11:59">
           </div>
           <div class="lunch-icon-row">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
             <input type="text" class="lunch-input field-input--am-place" placeholder="Punto de encuentro">
           </div>
         </div>
         <div class="lunch-field">
           <span class="lunch-eyebrow">TARDE (PM)</span>
           <div class="lunch-icon-row">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
             <input type="time" class="lunch-input field-input--pm" min="12:00" max="23:59">
           </div>
           <div class="lunch-icon-row">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
             <input type="text" class="lunch-input field-input--pm-place" placeholder="Punto de encuentro">
           </div>
         </div>
@@ -344,11 +364,20 @@
         <div class="lunch-field">
           <span class="lunch-eyebrow">CONTACT & ADDRESS</span>
           <div class="lunch-icon-row">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
             <textarea rows="1" class="lunch-input lunch-input--address" placeholder="Dirección"></textarea>
           </div>
           <div class="lunch-icon-row">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg>
             <input type="text" class="lunch-input lunch-input--notes" placeholder="Notas o teléfono">
           </div>
         </div>
